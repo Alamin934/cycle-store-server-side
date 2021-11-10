@@ -22,54 +22,71 @@ async function run() {
         await client.connect();
         const database = client.db("biCycle_shop");
         const biCyclesCollection = database.collection("biCycles");
-        const OrdersCollection = database.collection("orders");
+        const ordersCollection = database.collection("orders");
 
 
         // //All Plans Get API
-        // app.get('/allPlans', async (req, res) => {
-        //     const cursor = tourPlansCollection.find({});
-        //     const allPlans = await cursor.toArray();
-        //     res.send(allPlans);
-        // });
-        // // Post API
-        // app.post('/addTourPlans', async (req, res) => {
-        //     const plan = req.body;
-        //     const result = await tourPlansCollection.insertOne(plan);
-        //     res.json(result);
-        // });
-        // //Get Single Plan id API
-        // app.get('/allPlans/:id', async (req, res) => {
-        //     const id = req.params.id;
-        //     const query = { _id: ObjectId(id) };
-        //     const result = await tourPlansCollection.findOne(query);
-        //     res.json(result);
-        // });
-        // //All User Plans Get Api
-        // app.get('/userPlans', async (req, res) => {
-        //     const cursor = userPlansCollection.find({});
-        //     const result = await cursor.toArray();
-        //     res.send(result);
-        // });
-        // //User Plans Post API
-        // app.post('/userPlans', async (req, res) => {
-        //     const userPlan = req.body;
-        //     const result = await userPlansCollection.insertOne(userPlan);
-        //     res.json(result);
-        // });
-        // //Get single User Plans By email
-        // app.get('/myPlans/:email', async (req, res) => {
-        //     const email = req.params.email;
-        //     const cursor = userPlansCollection.find({ email });
-        //     const result = await cursor.toArray();
-        //     res.json(result);
-        // });
-        // //Delete/Cancel My Plans
-        // app.delete('/myPlans/:id', async (req, res) => {
-        //     const id = req.params.id;
-        //     const query = { _id: ObjectId(id) };
-        //     const result = await userPlansCollection.deleteOne(query);
-        //     res.json(result);
-        // });
+        app.get('/allBiCycles', async (req, res) => {
+            const allBiCycles = await biCyclesCollection.find({}).toArray();
+            res.send(allBiCycles);
+        });
+        // Post API
+        app.post('/allBiCycles', async (req, res) => {
+            const biCycle = req.body;
+            const result = await biCyclesCollection.insertOne(biCycle);
+            res.json(result);
+        });
+        //Get Single BiCycle id API
+        app.get('/allBiCycles/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const result = await biCyclesCollection.findOne(query);
+            res.json(result);
+        });
+        //All Orders Get Api
+        app.get('/orders', async (req, res) => {
+            const orders = await ordersCollection.find({}).toArray();
+            res.send(orders);
+        });
+        //Orders Post API
+        app.post('/orders', async (req, res) => {
+            const orders = req.body;
+            const result = await ordersCollection.insertOne(orders);
+            res.json(result);
+        });
+        //Get User Orders By email
+        app.get('/orders/:email', async (req, res) => {
+            const email = req.params.email;
+            const result = await ordersCollection.find({ email }).toArray();
+            res.json(result);
+        });
+
+        //Update status
+        app.put('/updateStatus/:id', async (req, res) => {
+            const id = req.params.id;
+            const updateStatus = req.body.status;
+            const filter = { _id: ObjectId(id) };
+            const updateDoc = {
+                $set: { status: updateStatus }
+            };
+            const result = await ordersCollection.updateOne(filter, updateDoc);
+            res.send(result);
+        })
+
+        //Delete/Cancel from AllOrders
+        app.delete('/orders/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const result = await ordersCollection.deleteOne(query);
+            res.json(result);
+        });
+        //Delete/Cancel from AllBiCycles/Product
+        app.delete('/allBiCycles/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const result = await biCyclesCollection.deleteOne(query);
+            res.json(result);
+        });
 
     } finally {
         // await client.close();
