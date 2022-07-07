@@ -1,6 +1,6 @@
 const express = require('express');
+const { MongoClient, ServerApiVersion } = require('mongodb');
 const cors = require('cors');
-const { MongoClient } = require('mongodb');
 require('dotenv').config();
 const app = express();
 const port = process.env.PORT || 5000;
@@ -10,8 +10,8 @@ const ObjectId = require('mongodb').ObjectId;
 app.use(cors());
 app.use(express.json());
 
-const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.wpmdo.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
-const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.ogrrwih.mongodb.net/?retryWrites=true&w=majority`;
+const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
 app.get('/', (req, res) => {
     res.send(`<h1 style="text-align:center">BiCycle Shop</h1>`)
@@ -102,11 +102,10 @@ async function run() {
         //Users Admin update
         app.put('/users/admin', async (req, res) => {
             const user = req.body;
-            const filter = { email: user.email };
+            const filter = { email: user?.email };
             const updateDoc = { $set: { role: 'admin' } };
             const result = await usersCollection.updateOne(filter, updateDoc);
             res.json(result);
-            console.log(result)
         });
         //Update status
         app.put('/updateStatus/:id', async (req, res) => {
@@ -136,7 +135,7 @@ async function run() {
         });
 
     } finally {
-        // await client.close();
+        await client.close();
     }
 }
 run().catch(console.dir);
